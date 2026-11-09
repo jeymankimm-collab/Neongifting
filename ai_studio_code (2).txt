@@ -1,0 +1,186 @@
+import React, { useState } from 'react';
+import { Play, Heart, Gift, Award, User, ShieldAlert, Video, PlusCircle } from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('feed');
+  const [userRole, setUserRole] = useState('ADMIN'); // Toggle between 'USER' and 'ADMIN'
+  const [votes, setVotes] = useState(1240);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [wallet, setWallet] = useState(350.00);
+
+  const handleVote = () => {
+    if (!hasVoted) {
+      setVotes(votes + 1);
+      setHasVoted(true);
+    }
+  };
+
+  const sendGift = (cost) => {
+    if (wallet >= cost) {
+      setWallet(wallet - cost);
+      alert(`Gift sent! Deducted $${cost}`);
+    } else {
+      alert("Insufficient wallet balance.");
+    }
+  };
+
+  return (
+    <div className="bg-black text-white min-h-screen max-w-md mx-auto flex flex-col justify-between border-x border-cyan-900 shadow-2xl relative font-sans">
+      
+      {/* Top Bar */}
+      <header className="p-4 flex justify-between items-center border-b border-gray-900 bg-black/80 backdrop-blur sticky top-0 z-50">
+        <h1 className="text-xl font-black tracking-wider bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
+          NEONPULSE
+        </h1>
+        <div className="flex items-center space-x-2">
+          <span className="text-xs bg-emerald-950 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono">
+            ${wallet.toFixed(2)}
+          </span>
+          {userRole === 'ADMIN' && (
+            <span className="text-xs bg-cyan-950 text-cyan-400 border border-cyan-500/40 px-2 py-0.5 rounded-full font-bold">
+              ADMIN
+            </span>
+          )}
+        </div>
+      </header>
+
+      {/* Main Body Content by Tab */}
+      <main className="flex-1 overflow-y-auto pb-20">
+
+        {/* FEED / SHORT VIDEOS */}
+        {activeTab === 'feed' && (
+          <div className="relative h-[80vh] bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
+            {/* Mock Video Container */}
+            <div className="w-full h-full flex flex-col justify-center items-center text-center p-6 border-b border-gray-800">
+              <div className="w-24 h-24 rounded-full border-2 border-cyan-400 flex items-center justify-center animate-pulse mb-4">
+                <Play className="text-emerald-400 w-10 h-10 ml-1" />
+              </div>
+              <p className="text-cyan-300 font-bold">@creator_prime</p>
+              <p className="text-gray-400 text-sm mt-1">High-Definition 4K Short Video Stream</p>
+            </div>
+
+            {/* Floating Action Controls */}
+            <div className="absolute right-4 bottom-16 flex flex-col space-y-6 items-center">
+              <button className="flex flex-col items-center group">
+                <div className="p-3 bg-gray-900/80 rounded-full border border-cyan-500/30 group-hover:border-cyan-400">
+                  <Heart className="text-cyan-400 w-6 h-6" />
+                </div>
+                <span className="text-xs mt-1 text-gray-300">45.2K</span>
+              </button>
+
+              <button onClick={() => sendGift(5.00)} className="flex flex-col items-center group">
+                <div className="p-3 bg-gray-900/80 rounded-full border border-emerald-500/30 group-hover:border-emerald-400">
+                  <Gift className="text-emerald-400 w-6 h-6" />
+                </div>
+                <span className="text-xs mt-1 text-gray-300">Gift ($5)</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* CAMPAIGN & VOTING */}
+        {activeTab === 'vote' && (
+          <div className="p-5 space-y-6">
+            <div className="border border-cyan-500/30 bg-gray-950 p-5 rounded-2xl shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+              <h2 className="text-lg font-bold text-cyan-400">Official Creator Campaign</h2>
+              <p className="text-gray-400 text-sm mt-1">Vote for your favorite creator of the week.</p>
+              
+              <div className="my-6 text-center">
+                <div className="text-4xl font-extrabold text-emerald-400 font-mono tracking-tight">{votes}</div>
+                <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">Total Verified Votes</p>
+              </div>
+
+              <button 
+                onClick={handleVote}
+                disabled={hasVoted}
+                className={`w-full py-3 rounded-xl font-bold uppercase tracking-wider transition ${
+                  hasVoted 
+                    ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-black hover:opacity-90'
+                }`}
+              >
+                {hasVoted ? 'Vote Submitted' : 'Cast Vote'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ADMIN DASHBOARD */}
+        {activeTab === 'admin' && userRole === 'ADMIN' && (
+          <div className="p-5 space-y-4">
+            <h2 className="text-lg font-bold text-red-400 flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5" /> Admin Moderation Panel
+            </h2>
+            <div className="border border-red-950 bg-gray-950 p-4 rounded-xl space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span>User: @bad_actor</span>
+                <button 
+                  onClick={() => alert("User removed and permissions revoked.")}
+                  className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-semibold"
+                >
+                  Suspend User
+                </button>
+              </div>
+              <div className="flex justify-between items-center text-sm border-t border-gray-900 pt-3">
+                <span>Platform Escrow Pool</span>
+                <span className="font-mono text-emerald-400 font-bold">$12,450.00</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PROFILE & WALLET */}
+        {activeTab === 'profile' && (
+          <div className="p-5 space-y-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-20 h-20 rounded-full border-2 border-emerald-400 p-1 mb-3">
+                <div className="w-full h-full bg-gray-800 rounded-full flex items-center justify-center">
+                  <User className="text-gray-400 w-8 h-8" />
+                </div>
+              </div>
+              <h3 className="font-bold text-lg text-cyan-300">My Profile</h3>
+              <p className="text-gray-400 text-sm">Custom Status & Coloured Bio</p>
+            </div>
+
+            <div className="border border-emerald-500/20 bg-gray-950 p-4 rounded-xl">
+              <div className="text-xs text-gray-400">Available Withdrawal Balance</div>
+              <div className="text-2xl font-mono text-emerald-400 font-bold mt-1">${wallet.toFixed(2)}</div>
+              <button 
+                onClick={() => alert("Withdrawal request dispatched to payment gateway.")}
+                className="mt-4 w-full py-2 bg-emerald-500 text-black font-bold rounded-lg text-sm hover:bg-emerald-400"
+              >
+                Request Withdrawal
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Bottom Navigation */}
+      <nav className="h-16 border-t border-gray-900 bg-black/90 backdrop-blur fixed bottom-0 max-w-md w-full flex justify-around items-center z-50">
+        <button onClick={() => setActiveTab('feed')} className={`flex flex-col items-center ${activeTab === 'feed' ? 'text-cyan-400' : 'text-gray-500'}`}>
+          <Video className="w-5 h-5" />
+          <span className="text-[10px] mt-1 font-semibold">Feed</span>
+        </button>
+
+        <button onClick={() => setActiveTab('vote')} className={`flex flex-col items-center ${activeTab === 'vote' ? 'text-emerald-400' : 'text-gray-500'}`}>
+          <Award className="w-5 h-5" />
+          <span className="text-[10px] mt-1 font-semibold">Voting</span>
+        </button>
+
+        {userRole === 'ADMIN' && (
+          <button onClick={() => setActiveTab('admin')} className={`flex flex-col items-center ${activeTab === 'admin' ? 'text-red-400' : 'text-gray-500'}`}>
+            <ShieldAlert className="w-5 h-5" />
+            <span className="text-[10px] mt-1 font-semibold">Admin</span>
+          </button>
+        )}
+
+        <button onClick={() => setActiveTab('profile')} className={`flex flex-col items-center ${activeTab === 'profile' ? 'text-cyan-400' : 'text-gray-500'}`}>
+          <User className="w-5 h-5" />
+          <span className="text-[10px] mt-1 font-semibold">Profile</span>
+        </button>
+      </nav>
+
+    </div>
+  );
+}
